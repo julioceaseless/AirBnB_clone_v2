@@ -34,14 +34,14 @@ sudo ln -s -f $releases/test/ /data/web_static/current
 sudo chown -R ubuntu:ubuntu /data/
 
 # set up alias
-hbnb_static="\ \n \tlocation /hbnb_static {\n
+hbnb_static=("\ \n \tlocation /hbnb_static {\n
                 \t\talias /data/web_static/current/;\n
                 \t\tautoindex off;\n
-        \t}\n"
+		\t}\n")
 
 # append new alias
-sudo sed -i "/^[[:space:]]}/ a $hbnb_static"\
-	/etc/nginx/sites-{enabled,available}/default 
+sudo sed -i "/^[[:space:]]}/ a $(echo $hbnb_static)"\
+	/etc/nginx/sites-{enabled,available}/default
 
 # restart nginx to apply configuration changes
 sudo service nginx restart
