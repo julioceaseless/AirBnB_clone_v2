@@ -10,7 +10,6 @@ sudo apt-get install -y nginx
 # create folder if it does not exist
 sudo mkdir -p /data/web_static/{shared,releases}/
 
-shared="/data/web_static/shared"
 releases="/data/web_static/releases"
 
 # create test folder
@@ -26,7 +25,7 @@ placeholder="
 </html>"
 	
 # create test index.html
-sudo echo "$placeholder" > $releases/test/index.html
+echo "$placeholder" | sudo tee > /dev/null $releases/test/index.html
 
 # create a symbolic link to test folder forcefully
 sudo ln -s -f $releases/test/ /data/web_static/current
@@ -41,7 +40,7 @@ hbnb_static="\ \n \tlocation /hbnb_static {\n
         \t}\n"
 
 # append new alias
-sudo sed -i "/^[[:space:]]}/ a $(echo $hbnb_static)"\
+sudo sed -i "/^[[:space:]]}/ a $hbnb_static"\
 	/etc/nginx/sites-{enabled,available}/default 
 
 # restart nginx to apply configuration changes
