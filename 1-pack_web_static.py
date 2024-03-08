@@ -22,8 +22,3 @@ def do_pack():
 
     # return the archive path if successfully or none
     return archive_path
-
-
-if __name__ == "__main__":
-    """run function only when called directly"""
-    do_pack()

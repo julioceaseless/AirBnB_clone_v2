@@ -68,6 +68,7 @@ def do_deploy(archive_path):
         return True
     return False
 
+
 def deploy():
     """
     Create and distribute archives to web servers
