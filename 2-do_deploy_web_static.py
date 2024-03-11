@@ -25,7 +25,7 @@ def do_pack():
     local("mkdir -p versions")
 
     # create an archive
-    tar_ball = local(f"tar -cvzf {archive_path} web_static")
+    archive = local(f"tar -cvzf {archive_path} web_static")
 
     # return the archive path if successfully or none
     return archive_path
@@ -36,12 +36,15 @@ def do_deploy(archive_path):
 
     # execute this block if archive exists
     if os.path.exists(archive_path):
+        # extract archive.tgz name
         archive = archive_path.split('/')[1]
+
+        # create a temporary folder
         tmp_apath = f"/tmp/{archive}"
         folder = archive.split('.')[0]
         f_path = f"/data/web_static/releases/{folder}/"
 
-        # upload archive to /tmp in the server(s)
+        # upload archive to /tmp/archive in the server(s)
         put(archive_path, tmp_apath)
 
         # make directory for keeping extracted files
