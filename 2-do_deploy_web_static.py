@@ -63,7 +63,7 @@ def do_deploy(archive_path):
         current_link = "/data/web_static/current"
 
         # delete old symbolic link from server
-        run(f"rm -f {current_link}")
+        run(f"rm -rf {current_link}")
 
         # create new symbolic link
         run(f"ln -s {f_path} {current_link}")
