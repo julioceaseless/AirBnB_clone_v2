@@ -57,7 +57,7 @@ def do_deploy(archive_path):
         run(f"rm {tmp_apath}")
 
         # move extracted files
-        run(f"mv -f {f_path}web_static/* {f_path}")
+        run(f"mv {f_path}web_static/* {f_path}")
         run(f"rm -rf {f_path}web_static")
 
         current_link = "/data/web_static/current"
