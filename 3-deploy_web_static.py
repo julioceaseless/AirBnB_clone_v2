@@ -34,37 +34,40 @@ def do_pack():
 def do_deploy(archive_path):
     """ upload the archives to the webservers"""
 
-    # execute this block if archive exists
     if os.path.exists(archive_path):
-        archive = archive_path.split('/')[1]
-        tmp_apath = f"/tmp/{archive}"
-        folder = archive.split('.')[0]
-        f_path = f"/data/web_static/releases/{folder}/"
+        # retrieve archive name
+        archive_name = archive_path.split('/')[1]
 
-        # upload archive to /tmp in the server(s)
-        put(archive_path, tmp_apath)
+        # create pathname for temporary storage of archive
+        tmp_path = f"/tmp/{archive_name}"
 
-        # make directory for keeping extracted files
-        run(f"mkdir -p {f_path}")
+        # create a dir name using archive_name without extension
+        directory = archive_name.split('.')[0]
+        new_release_path = f"/data/web_static/releases/{directory}/"
 
-        # uncompress the tar ball
-        run(f"tar -xzf {tmp_apath} -C {f_path}")
+        # push archive to remote directory
+        put(archive_path, tmp_path)
 
-        # remove archived file
-        run(f"rm {tmp_apath}")
+        # create directory for storing the uncompressed files
+        run(f"mkdir -p {new_release_path}")
 
-        # move extracted files
-        run(f"mv -f {f_path}web_static/* {f_path}")
-        run(f"rm -rf {f_path}web_static")
+        # extract the files
+        run(f"tar -xzf {tmp_path} -C {new_release_path}")
 
-        current_link = "/data/web_static/current"
+        # remove zipped file
+        run(f"rm {tmp_path}")
 
-        # delete old symbolic link from server
-        run(f"rm -f {current_link}")
+        # move new release to the correct directory
+        run(f"mv {new_release_path}web_static/* {new_release_path}")
 
-        # create new symbolic link
-        run(f"ln -s {f_path} {current_link}")
+        # remove old directory
+        run(f"rm -rf {new_release_path}web_static")
 
+        # delet old symlink
+        run("rm -rf /data/web_static/current")
+
+        # create new symlink
+        run(f"ln -s {new_release_path} /data/web_static/current")
         return True
     return False
 
@@ -73,7 +76,13 @@ def deploy():
     """
     Create and distribute archives to web servers
     """
+
+    # get the archive path
     archive_path = do_pack()
+    print(archive_path)
+
+    # return false if archive path is incorrect or value of do_deploy
     if archive_path is None:
         return False
+    # return the value od do_deploy
     return do_deploy(archive_path)
