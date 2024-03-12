@@ -18,7 +18,7 @@ def do_pack():
     now = datetime.now().strftime("%Y%m%d%H%M%S")
 
     # Construct path where archive will be saved
-    archive_path = "versions/web_static_{}.tgz".format(now)
+    archive_path = f"versions/web_static_{now}.tgz"
 
     # use fabric function to create directory if it doesn't exist
     local("mkdir -p versions")
@@ -44,25 +44,32 @@ def do_deploy(archive_path):
 
         # create a dir name using archive_name without extension
         directory = archive_name.split('.')[0]
-        new_release_path = "/data/web_static/releases/{directory}/"
+        new_release_path = f"/data/web_static/releases/{directory}/"
 
         # push archive to remote directory
         put(archive_path, tmp_path)
 
         # create directory for storing the uncompressed files
-        run(f"mkdir -p {new_release_path}")
+        run(f" mkdir -p {new_release_path}")
 
         # extract the files
-        run(f"tar -xzf {tmp_path} -C {new_release_path}")
+        run(f" tar -xzf {tmp_path} -C {new_release_path}")
 
         # remove zipped file
-        run(f"rm {tmp_path}")
+        run(f" rm {tmp_path}")
 
         # move new release to the correct directory
-        run(f"mv {new_release_path}web_static/* {new_release_path}")
+        run(f" mv -f {new_release_path}web_static/* {new_release_path}")
 
         # remove old directory
-        run(f"rm -rf {new_release_path}web_static")
+        run(f" rm -rf {new_release_path}web_static")
+
+        # create my_index.html
+        html = '''<html>
+        <head></head>
+        <body><p>Holberton School</p></body>
+        </html>'''
+        run(f"echo '{html}' > {new_release_path}my_index.html")
 
         # delet old symlink
         run("rm -rf /data/web_static/current")
