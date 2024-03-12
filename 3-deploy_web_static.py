@@ -79,7 +79,6 @@ def deploy():
 
     # get the archive path
     archive_path = do_pack()
-    print(archive_path)
 
     # return false if archive path is incorrect or value of do_deploy
     if archive_path is None:
