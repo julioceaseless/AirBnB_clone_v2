@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" script starts a Flask web app """
+""" This script starts a Flask web app """
 from flask import Flask
 
 
@@ -9,7 +9,10 @@ app = Flask(__name__)
 # define route for app's home dir
 @app.route("/", strict_slashes=False)
 def hbnb():
-    """ home"""
+    """
+    This is the content that gets dsiplayed
+    when user visits home
+    """
     return "Hello HBNB!"
 
 
