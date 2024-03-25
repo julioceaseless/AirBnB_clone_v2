@@ -43,8 +43,9 @@ class DBStorage:
         if cls and cls in all_classes:
             list_objs = self.__session.query(eval(cls)).all()
         else:
-            for cls in all_classes:
-                list_objs += self.__session.query(eval(cls)).all()
+            for each_class in all_classes:
+                cls = eval(each_class)
+                list_objs += self.__session.query(cls).all()
         for obj in list_objs:
             key = f'{obj.__class__.__name__}.{obj.id}'
             dict_objs[key] = obj
