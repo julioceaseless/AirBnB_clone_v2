@@ -74,4 +74,3 @@ class DBStorage:
     def close(self):
         """ calls remove to dispose of the current session, if present"""
         self.__session.remove()
-
