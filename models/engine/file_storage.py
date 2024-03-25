@@ -37,7 +37,11 @@ class FileStorage:
             """create key for the obj"""
             key = f'{obj.__class__.__name__}.{obj.id}'
             """delete from __objects dictionary"""
-            del FileStorage.__objects[key]
+            if key in self.__objects:
+                del self.__objects[key]
+                self.save()
+        else:
+            return
 
     def reload(self):
         """Loads storage dictionary from file"""
@@ -62,3 +66,7 @@ class FileStorage:
                     self.all()[key] = classes[val['__class__']](**val)
         except FileNotFoundError:
             pass
+
+    def close(self):
+        """ deserialize json file to objects"""
+        reload()
