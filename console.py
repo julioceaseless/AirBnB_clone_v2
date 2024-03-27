@@ -113,15 +113,65 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
+    def parse_list(args_list):
+        """converts a list with keyworded entries into a dict"""
+        _dict = {}
+        for i, item in enumerate(args_list):
+            temp = item.split("=")
+            key = temp[0]
+            value = temp[1]
+            if '"' in value:
+                value = value[1:-1].replace('"', '\"')
+                value = value.replace("_", " ")
+            else:
+                try:
+                    value = int(value)
+                except ValueError:
+                    try:
+                        value = float(value)
+                    except ValueError:
+                        value = value
+            _dict.update({key: value})
+        return _dict
+
     def do_create(self, args):
         """ Create an object of any class"""
         if not args:
             print("** class name missing **")
             return
-        elif args not in HBNBCommand.classes:
+        # split the arguments
+        arg_list = args.split()
+        obj = arg_list[0]
+        param_dict = {}
+        # check if there are parameters passed
+        if (len(arg_list) > 1):
+            for parameter in arg_list[1:]:
+                if (len(parameter.split("=")) == 2):
+                    key, value = parameter.split("=")
+                    if '"' in value:
+                        value = value[1:-1].replace("_", " ").\
+                                replace('"', '\"')
+                    else:
+                        try:
+                            value = int(value)
+                        except ValueError:
+                            try:
+                                value = float(value)
+                            except ValueError:
+                                value = value
+                    param_dict[key] = value
+        # print(param_dict)
+        # check if the object exists
+        if obj not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        new_instance = HBNBCommand.classes[args]()
+
+        # create an instance of the object
+        new_instance = HBNBCommand.classes[obj]()
+
+        # add the kwargs as attributes to the new instance
+        for key, value in param_dict.items():
+            new_instance.__dict__[key] = value
         storage.save()
         print(new_instance.id)
         storage.save()
@@ -319,6 +369,7 @@ class HBNBCommand(cmd.Cmd):
         """ Help information for the update class """
         print("Updates an object with new information")
         print("Usage: update <className> <id> <attName> <attVal>\n")
+
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
