@@ -113,27 +113,6 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-    def parse_list(args_list):
-        """converts a list with keyworded entries into a dict"""
-        _dict = {}
-        for i, item in enumerate(args_list):
-            temp = item.split("=")
-            key = temp[0]
-            value = temp[1]
-            if '"' in value:
-                value = value[1:-1].replace('"', '\"')
-                value = value.replace("_", " ")
-            else:
-                try:
-                    value = int(value)
-                except ValueError:
-                    try:
-                        value = float(value)
-                    except ValueError:
-                        value = value
-            _dict.update({key: value})
-        return _dict
-
     def do_create(self, args):
         """ Create an object of any class"""
         if not args:
