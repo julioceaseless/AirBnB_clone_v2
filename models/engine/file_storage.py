@@ -57,3 +57,16 @@ class FileStorage:
                     self.__objects[key] = dict_value
         except FileNotFoundError:
             pass
+
+    def close(self):
+        """Reload JSON objects
+        """
+        return self.reload()
+
+    def delete(self, obj=None):
+        """delete obj from __objects if present
+        """
+        if  obj is not None:
+            # format key from obj
+            key = "{}.{}".format(type(obj).__name__, obj.id)
+            del self.__objects[key]
