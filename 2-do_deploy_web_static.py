@@ -35,6 +35,7 @@ def do_pack():
 
 def do_deploy(archive_path):
     '''use os module to check for valid file path'''
+
     if os.path.exists(archive_path):
         # retrieve archive name
         archive_name = archive_path.split('/')[1]
@@ -55,10 +56,10 @@ def do_deploy(archive_path):
         # extract the files
         run(f" tar -xzf {tmp_path} -C {new_release_path}")
 
-        # remove zipped file
+        # remove compressed file
         run(f" rm {tmp_path}")
 
-        # move new release to the correct directory
+        # move new release files to the correct directory
         run(f" mv -f {new_release_path}web_static/* {new_release_path}")
 
         # remove old directory
