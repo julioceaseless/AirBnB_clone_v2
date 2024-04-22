@@ -1,38 +1,40 @@
 #!/usr/bin/python3
 """
-This fabfile distributes an archive to my web servers
+This fabric script distributes an archive to web servers
 """
 import os
 from fabric.api import *
 from datetime import datetime
 
 
-# Set the host IP addresses for web-01 and web-02
+# webservers IP addresses: [web-01, web-02]
 env.hosts = ['100.25.24.173', '54.237.54.104']
 env.user = "ubuntu"
 
 
 def do_pack():
-    """ Create a .tgz archive from the contents of webstatic folder"""
-
-    # get time now
+    """Create a tar gzipped archive of the directory web_static."""
+    # obtain the current date and time
     now = datetime.now().strftime("%Y%m%d%H%M%S")
 
-    # create a archive path
+    # Construct path where archive will be saved
     archive_path = f"versions/web_static_{now}.tgz"
 
-    # create directory to store all the archive files
+    # use fabric function to create directory if it doesn't exist
     local("mkdir -p versions")
 
-    # create an archive
-    tar_ball = local(f"tar -cvzf {archive_path} web_static")
+    # Use tar command to create a compresses archive
+    archived = local("tar -cvzf {} web_static".format(archive_path))
 
-    # return the archive path if successfully or none
-    return archive_path
+    # Check archive Creation Status
+    if archived.return_code != 0:
+        return None
+    else:
+        return archive_path
 
 
 def do_deploy(archive_path):
-    """ upload the archives to the webservers"""
+    '''use os module to check for valid file path'''
 
     if os.path.exists(archive_path):
         # retrieve archive name
@@ -49,19 +51,26 @@ def do_deploy(archive_path):
         put(archive_path, tmp_path)
 
         # create directory for storing the uncompressed files
-        run(f"mkdir -p {new_release_path}")
+        run(f" mkdir -p {new_release_path}")
 
         # extract the files
-        run(f"tar -xzf {tmp_path} -C {new_release_path}")
+        run(f" tar -xzf {tmp_path} -C {new_release_path}")
 
-        # remove zipped file
-        run(f"rm {tmp_path}")
+        # remove compressed file
+        run(f" rm {tmp_path}")
 
-        # move new release to the correct directory
-        run(f"mv {new_release_path}web_static/* {new_release_path}")
+        # move new release files to the correct directory
+        run(f" mv -f {new_release_path}web_static/* {new_release_path}")
 
         # remove old directory
-        run(f"rm -rf {new_release_path}web_static")
+        run(f" rm -rf {new_release_path}web_static")
+
+        # create my_index.html
+        html = '''<html>
+        <head></head>
+        <body><p>Holberton School</p></body>
+        </html>'''
+        run(f"echo '{html}' > {new_release_path}my_index.html")
 
         # delet old symlink
         run("rm -rf /data/web_static/current")
