@@ -89,11 +89,11 @@ def do_clean(number=0):
     releases_path = "/data/web_static/releases/"
 
     versions = local("ls {}".format(versions_path), capture=True).splitlines()
-    sorted_versions = sorted(versions)
+    sorted_versions = sorted(versions, reverse=True)
 
     releases = run("ls {}".format(releases_path), shell=False)
     releases = releases.stdout.splitlines()
-    sorted_releases = sorted(releases)
+    sorted_releases = sorted(releases, reverse=True)
 
     target_dirs = [sorted_releases, sorted_versions]
     number = int(number)
