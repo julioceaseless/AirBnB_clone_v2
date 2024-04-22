@@ -82,35 +82,28 @@ def do_deploy(archive_path):
 
 
 def do_clean(number=0):
-    '''
-    clean old files
-    '''
-    versions_path = "versions/"
-    releases_path = "/data/web_static/releases/"
-
-    versions = local("ls {}".format(versions_path), capture=True).splitlines()
-    sorted_versions = sorted(versions, reverse=True)
-
-    releases = run("ls {}".format(releases_path), shell=False)
-    releases = releases.stdout.splitlines()
-    sorted_releases = sorted(releases, reverse=True)
-
-    target_dirs = [sorted_releases, sorted_versions]
-    number = int(number)
-
-    for directory in target_dirs:
-        if number <= 1:
-            for file in directory[1:]:
-                if directory is sorted_versions:
-                    local("rm {}{}".format(versions_path, file))
-                else:
-                    run("rm -rf {}{}".format(releases_path, file))
-        elif(number == 2):
-            for file in directory[number:]:
-                if directory is sorted_versions:
-                    local("rm {}{}".format(versions_path, file))
-                else:
-                    run("rm -rf {}{}".format(releases_path, file))
+    """Deletes old archives of the static files.
+    Args:
+        number (Any): The number of archives to keep.
+    """
+    archives = os.listdir('versions/')
+    archives.sort(reverse=True)
+    start = int(number)
+    if not start:
+        start += 1
+    if start < len(archives):
+        archives = archives[start:]
+    else:
+        archives = []
+    for archive in archives:
+        os.unlink('versions/{}'.format(archive))
+    cmd_parts = [
+        "rm -rf $(",
+        "find /data/web_static/releases/ -maxdepth 1 -type d -iregex",
+        " '/data/web_static/releases/web_static_.*'",
+        " | sort -r | tr '\\n' ' ' | cut -d ' ' -f{}-)".format(start + 1)
+    ]
+    run(''.join(cmd_parts))
 
 
 def deploy():
